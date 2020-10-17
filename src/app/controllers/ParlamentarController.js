@@ -46,6 +46,16 @@ class ParlamentarController {
       attributes: ['id', 'name', 'document', 'avatar_url'],
     });
 
+    async function manage_reimbursement(list_of_items) {
+      return list_of_items.map(e => ({
+        'document_value': e['document_value'],
+        'receipt': e['receipt']['url'],
+        'subquota_description': e['subquota_description'],
+        'issue_date': e['issue_date'],
+        'suspicions': e['suspicions']
+      }))
+    }
+
     const jarbas_url_hard_coded = 'http://jarbas.serenata.ai/api/chamber_of_deputies/reimbursement/'
     const params = {
       'search': parlamentar.name,
@@ -53,10 +63,11 @@ class ParlamentarController {
       'order_by': 'issue_date'
     }
     const reimbursement = await axios.get(jarbas_url_hard_coded, { params })
+    const reimbursement_parsed = await manage_reimbursement(reimbursement.data['results'])
 
     return res.json({
       'parlamentar_data': parlamentar,
-      'reimbursements': reimbursement.data['results']
+      'reimbursements': reimbursement_parsed
     });
   }
 
