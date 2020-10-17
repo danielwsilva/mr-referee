@@ -8,7 +8,9 @@ class ParlamentarController {
       name: Yup.string().required(),
       document: Yup.string().required(),
       avatar_url: Yup.string(),
-      has_suspicions: Yup.boolean().required()
+      has_suspicions: Yup.boolean().required(),
+      party: Yup.string().required(),
+      estate: Yup.string().required()
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -21,19 +23,21 @@ class ParlamentarController {
       return res.status(400).json({error: 'Parlamentar already exists.'});
     }
 
-    const {name, document, avatar_url, has_suspicions} = await Parlamentar.create(req.body);
+    const {name, document, avatar_url, has_suspicions, party, estate} = await Parlamentar.create(req.body);
 
     return res.json({
       name,
       document,
       avatar_url,
-      has_suspicions
+      has_suspicions,
+      party,
+      estate
     });
   }
 
   async index_all(req, res) {
     const parlamentar = await Parlamentar.findAll({
-      attributes: ['id', 'name', 'document', 'avatar_url', 'has_suspicions'],
+      attributes: ['id', 'name', 'document', 'avatar_url', 'has_suspicions', 'party', 'estate'],
     });
 
     return res.json(parlamentar);
@@ -42,7 +46,7 @@ class ParlamentarController {
   async index_one(req, res) {
     const parlamentar = await Parlamentar.findOne({
       where: {id: req.params.id},
-      attributes: ['id', 'name', 'document', 'avatar_url', 'has_suspicions'],
+      attributes: ['id', 'name', 'document', 'avatar_url', 'has_suspicions', 'party', 'estate'],
     });
 
     if (!parlamentar){
@@ -55,7 +59,9 @@ class ParlamentarController {
         'receipt': e.receipt.url,
         'subquota_description': e.subquota_description,
         'issue_date': e.issue_date,
-        'suspicions': e.suspicions
+        'suspicions': e.suspicions,
+        'supplier': e.supplier,
+        'cnpj_cpf': e.cnpj_cpf
       }))
     }
 

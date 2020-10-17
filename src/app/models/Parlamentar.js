@@ -7,7 +7,9 @@ class Parlamentar extends Model {
         name: Sequelize.STRING,
         document: Sequelize.STRING,
         avatar_url: Sequelize.STRING,
-        has_suspicions: Sequelize.BOOLEAN
+        has_suspicions: Sequelize.BOOLEAN,
+        party: Sequelize.STRING,
+        estate: Sequelize.STRING
       },
       {
         sequelize,

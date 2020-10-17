@@ -19,6 +19,14 @@ module.exports = {
         allowNull: false,
         unique: true
       },
+      party: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      estate: {
+        type: Sequelize.STRING(2),
+        allowNull: false
+      },
       avatar_url:{
         type: Sequelize.STRING
       },
