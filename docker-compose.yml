@@ -1,0 +1,16 @@
+version: '3'
+services:
+
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=mr-referee
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=mr-referee-db
+      - PGDATA=/data/db/postgres
+
+networks:
+  app-connect:
+    driver: bridge
