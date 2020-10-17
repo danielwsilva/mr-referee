@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import Parlamentar from "../models/Parlamentar";
+import axios from 'axios';
 
 class ParlamentarController {
   async store(req, res) {
@@ -45,7 +46,17 @@ class ParlamentarController {
       attributes: ['id', 'name', 'document', 'avatar_url'],
     });
 
-    return res.json(parlamentar);
+    const jarbas_url_hard_coded = 'http://jarbas.serenata.ai/api/chamber_of_deputies/reimbursement/'
+    const params = {
+      'cpf_cnpj': parlamentar.document
+    }
+
+    const reimbursement = await axios.get(jarbas_url_hard_coded, { params })
+
+    return res.json({
+      'parlamentar_data': parlamentar,
+      'reimbursements': reimbursement.data
+    });
   }
 
 }
