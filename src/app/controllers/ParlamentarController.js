@@ -48,14 +48,15 @@ class ParlamentarController {
 
     const jarbas_url_hard_coded = 'http://jarbas.serenata.ai/api/chamber_of_deputies/reimbursement/'
     const params = {
-      'cpf_cnpj': parlamentar.document
+      'search': parlamentar.name,
+      'suspicions': 1,
+      'order_by': 'issue_date'
     }
-
     const reimbursement = await axios.get(jarbas_url_hard_coded, { params })
 
     return res.json({
       'parlamentar_data': parlamentar,
-      'reimbursements': reimbursement.data
+      'reimbursements': reimbursement.data['results']
     });
   }
 
