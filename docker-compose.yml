@@ -6,9 +6,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=mr-referee
-      - POSTGRES_PASSWORD=docker
-      - POSTGRES_DB=mr-referee-db
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
       - PGDATA=/data/db/postgres
 
 networks:
