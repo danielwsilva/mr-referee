@@ -1,0 +1,23 @@
+{
+  "name": "MrReferee",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "dev:debug": "nodemon --inspect src/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "pg": "^8.4.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.3.5",
+    "yup": "^0.29.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.5",
+    "sequelize-cli": "^6.2.0",
+    "sucrase": "^3.16.0"
+  }
+}
