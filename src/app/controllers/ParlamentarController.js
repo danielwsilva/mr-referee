@@ -45,6 +45,10 @@ class ParlamentarController {
       attributes: ['id', 'name', 'document', 'avatar_url', 'has_suspicions'],
     });
 
+    if (!parlamentar){
+      return res.status(409).json({error: 'Parlamentar not found. Cannot return this.'});
+    }
+
     async function manage_reimbursement(list_of_items) {
       return list_of_items.map(e => ({
         'document_value': e.document_value,
@@ -58,11 +62,11 @@ class ParlamentarController {
     const jarbas_url_hard_coded = 'http://jarbas.serenata.ai/api/chamber_of_deputies/reimbursement/'
     const params = {
       'search': parlamentar.name,
-      'suspicions': 1,
+      'suspicions': (parlamentar.has_suspicions) ? 1 : 0,
       'order_by': 'issue_date'
     }
     const reimbursement = await axios.get(jarbas_url_hard_coded, { params })
-    const reimbursement_parsed = await manage_reimbursement(reimbursement.data['results'])
+    const reimbursement_parsed = await manage_reimbursement(reimbursement.data.results)
 
     return res.json({
       'parlamentar_data': parlamentar,
