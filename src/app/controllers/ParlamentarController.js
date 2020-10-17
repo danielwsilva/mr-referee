@@ -6,11 +6,9 @@ class ParlamentarController {
   async store(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
-      document: Yup.string().matches(/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/, 'Enter correct Brazilian Document!').required(),
-      avatar_url: Yup.string().matches(
-        /((https?):\/\/)?(www.)?[a-z0-9]+(\.[a-z]{2,}){1,3}(#?\/?[a-zA-Z0-9#]+)*\/?(\?[a-zA-Z0-9-_]+=[a-zA-Z0-9-%]+&?)?$/,
-        'Enter correct url!'
-      )
+      document: Yup.string().required(),
+      avatar_url: Yup.string(),
+      has_suspicions: Yup.boolean().required()
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -23,18 +21,19 @@ class ParlamentarController {
       return res.status(400).json({error: 'Parlamentar already exists.'});
     }
 
-    const {name, document, avatar_url} = await Parlamentar.create(req.body);
+    const {name, document, avatar_url, has_suspicions} = await Parlamentar.create(req.body);
 
     return res.json({
       name,
       document,
-      avatar_url
+      avatar_url,
+      has_suspicions
     });
   }
 
   async index_all(req, res) {
     const parlamentar = await Parlamentar.findAll({
-      attributes: ['id', 'name', 'document', 'avatar_url'],
+      attributes: ['id', 'name', 'document', 'avatar_url', 'has_suspicions'],
     });
 
     return res.json(parlamentar);
@@ -43,16 +42,16 @@ class ParlamentarController {
   async index_one(req, res) {
     const parlamentar = await Parlamentar.findOne({
       where: {id: req.params.id},
-      attributes: ['id', 'name', 'document', 'avatar_url'],
+      attributes: ['id', 'name', 'document', 'avatar_url', 'has_suspicions'],
     });
 
     async function manage_reimbursement(list_of_items) {
       return list_of_items.map(e => ({
-        'document_value': e['document_value'],
-        'receipt': e['receipt']['url'],
-        'subquota_description': e['subquota_description'],
-        'issue_date': e['issue_date'],
-        'suspicions': e['suspicions']
+        'document_value': e.document_value,
+        'receipt': e.receipt.url,
+        'subquota_description': e.subquota_description,
+        'issue_date': e.issue_date,
+        'suspicions': e.suspicions
       }))
     }
 
@@ -69,6 +68,36 @@ class ParlamentarController {
       'parlamentar_data': parlamentar,
       'reimbursements': reimbursement_parsed
     });
+  }
+
+  async delete(req, res) {
+    const parlamentar = await Parlamentar.findByPk(req.params.id);
+
+    if(parlamentar){
+      await parlamentar.destroy()
+      return res.json(parlamentar)
+    }else{
+      return res.status(409).json({error: 'Parlamentar not found. Cannot delete this.'});
+    }
+  }
+
+  async update(req, res) {
+    const schema = Yup.object().shape({
+      has_suspicions: Yup.boolean().required()
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Validation fails' });
+    }
+
+    const parlamentar = await Parlamentar.findByPk(req.params.id);
+
+    if(parlamentar){
+      await parlamentar.update(req.body);
+      return res.json(parlamentar)
+    }else{
+      return res.status(409).json({error: 'Parlamentar not found. Cannot update this.'});
+    }
   }
 
 }

@@ -30,6 +30,11 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
       },
+      has_suspicions: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        default: true
+      }
     })
   },
 
