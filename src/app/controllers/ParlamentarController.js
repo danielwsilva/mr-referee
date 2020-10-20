@@ -8,7 +8,7 @@ class ParlamentarController {
       name: Yup.string().required(),
       document: Yup.string().required(),
       avatar_url: Yup.string(),
-      has_suspicions: Yup.boolean().required(),
+      has_suspicions: Yup.boolean(),
       party: Yup.string().required(),
       estate: Yup.string().required()
     });
@@ -65,7 +65,7 @@ class ParlamentarController {
 
     // get applicant id by election name
     const applicant_id = await axios.get('https://jarbas.serenata.ai/api/chamber_of_deputies/applicant/',
-      {q: parlamentar.name})
+      {'q': parlamentar.name})
 
     if (!applicant_id.data.results[0].applicant_id)
       return res.status(409).json({error: 'Parlamentar not found. Cannot return this.'});

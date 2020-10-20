@@ -41,7 +41,7 @@ module.exports = {
       has_suspicions: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-        default: true
+        defaultValue: true
       }
     })
   },
