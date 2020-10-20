@@ -49,9 +49,7 @@ class ParlamentarController {
       attributes: ['id', 'name', 'document', 'avatar_url', 'has_suspicions', 'party', 'estate'],
     });
 
-    if (!parlamentar){
-      return res.status(409).json({error: 'Parlamentar not found. Cannot return this.'});
-    }
+    if (!parlamentar) return res.status(409).json({error: 'Parlamentar not found. Cannot return this.'});
 
     async function manage_reimbursement(list_of_items) {
       return list_of_items.map(e => ({
@@ -65,13 +63,21 @@ class ParlamentarController {
       }))
     }
 
+    // get applicant id by election name
+    const applicant_id = await axios.get('https://jarbas.serenata.ai/api/chamber_of_deputies/applicant/',
+      {q: parlamentar.name})
+
+    if (!applicant_id.data.results[0].applicant_id)
+      return res.status(409).json({error: 'Parlamentar not found. Cannot return this.'});
+
+    //get reimbursement
     const jarbas_url_hard_coded = 'http://jarbas.serenata.ai/api/chamber_of_deputies/reimbursement/'
     const params = {
-      'search': parlamentar.name,
+      'applicant_id': applicant_id.data.results[0].applicant_id,
       'suspicions': (parlamentar.has_suspicions) ? 1 : 0,
       'order_by': 'issue_date'
     }
-    const reimbursement = await axios.get(jarbas_url_hard_coded, { params })
+    const reimbursement = await axios.get(jarbas_url_hard_coded, {params})
     const reimbursement_parsed = await manage_reimbursement(reimbursement.data.results)
 
     return res.json({
@@ -83,10 +89,10 @@ class ParlamentarController {
   async delete(req, res) {
     const parlamentar = await Parlamentar.findByPk(req.params.id);
 
-    if(parlamentar){
+    if (parlamentar) {
       await parlamentar.destroy()
       return res.json(parlamentar)
-    }else{
+    } else {
       return res.status(409).json({error: 'Parlamentar not found. Cannot delete this.'});
     }
   }
@@ -97,15 +103,15 @@ class ParlamentarController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      return res.status(400).json({ error: 'Validation fails' });
+      return res.status(400).json({error: 'Validation fails'});
     }
 
     const parlamentar = await Parlamentar.findByPk(req.params.id);
 
-    if(parlamentar){
+    if (parlamentar) {
       await parlamentar.update(req.body);
       return res.json(parlamentar)
-    }else{
+    } else {
       return res.status(409).json({error: 'Parlamentar not found. Cannot update this.'});
     }
   }
