@@ -59,13 +59,25 @@ class ParlamentarController {
         'issue_date': e.issue_date,
         'suspicions': e.suspicions,
         'supplier': e.supplier,
-        'cnpj_cpf': e.cnpj_cpf
+        'cnpj_cpf': e.cnpj_cpf,
+        'document_id': e.document_id === 0 ? null : e.document_id
       }))
+    }
+
+    async function resolve_receipt(list_of_items) {
+      list_of_items.forEach(function (entry) {
+        if (entry.receipt & !entry.document_id) {
+          const receipt_url =
+            axios.get('https://jarbas.serenata.ai/api/chamber_of_deputies/reimbursement/' + entry.document_id + '/receipt/?force=1')
+          if (!receipt_url.url) entry.receipt = receipt_url
+        }
+      })
+      return list_of_items
     }
 
     // get applicant id by election name
     const applicant_id = await axios.get('https://jarbas.serenata.ai/api/chamber_of_deputies/applicant/',
-      {'q': parlamentar.name})
+      {params: {'q': parlamentar.name}})
 
     if (!applicant_id.data.results[0].applicant_id)
       return res.status(409).json({error: 'Parlamentar not found. Cannot return this.'});
@@ -79,10 +91,11 @@ class ParlamentarController {
     }
     const reimbursement = await axios.get(jarbas_url_hard_coded, {params})
     const reimbursement_parsed = await manage_reimbursement(reimbursement.data.results)
+    const reimbursement_fix_receipt = await resolve_receipt(reimbursement_parsed)
 
     return res.json({
       'parlamentar_data': parlamentar,
-      'reimbursements': reimbursement_parsed
+      'reimbursements': reimbursement_fix_receipt
     });
   }
 
