@@ -68,7 +68,7 @@ class ParlamentarController {
       list_of_items.forEach(function (entry) {
         if (entry.receipt & !entry.document_id) {
           const receipt_url =
-            axios.get('https://jarbas.serenata.ai/api/chamber_of_deputies/reimbursement/' + entry.document_id + '/receipt/?force=1')
+            axios.get('http://165.227.250.165:8000/api/chamber_of_deputies/reimbursement/' + entry.document_id + '/receipt/?force=1')
           if (!receipt_url.url) entry.receipt = receipt_url
         }
       })
@@ -76,14 +76,14 @@ class ParlamentarController {
     }
 
     // get applicant id by election name
-    const applicant_id = await axios.get('https://jarbas.serenata.ai/api/chamber_of_deputies/applicant/',
+    const applicant_id = await axios.get('http://165.227.250.165:8000/api/chamber_of_deputies/applicant/',
       {params: {'q': parlamentar.name}})
 
     if (!applicant_id.data.results[0].applicant_id)
       return res.status(409).json({error: 'Parlamentar not found. Cannot return this.'});
 
     //get reimbursement
-    const jarbas_url_hard_coded = 'http://jarbas.serenata.ai/api/chamber_of_deputies/reimbursement/'
+    const jarbas_url_hard_coded = 'http://165.227.250.165:8000/api/chamber_of_deputies/reimbursement/'
     const params = {
       'applicant_id': applicant_id.data.results[0].applicant_id,
       'suspicions': (parlamentar.has_suspicions) ? 1 : 0,
